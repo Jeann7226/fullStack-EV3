@@ -31,8 +31,12 @@ public class BoletaService {
         return mapToResponse(boleta);
     }
 
-    // TODO: [FULL STACK] Agregar metodo para consultar la boleta correspondiente a una orden o idPago,
-    // y permitir la descarga o visualizacion en formato PDF o JSON detallado.
+    @Transactional(readOnly = true)
+    public BoletaResponseDto getByNumeroBoleta(String numeroBoleta) {
+        Boleta b = boletaRepository.findByNumeroBoleta(numeroBoleta)
+                .orElseThrow(() -> new RuntimeException("Boleta no encontrada: " + numeroBoleta));
+        return mapToResponse(b);
+    }
 
     private BoletaResponseDto mapToResponse(Boleta b) {
         return new BoletaResponseDto(

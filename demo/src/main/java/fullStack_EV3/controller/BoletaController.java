@@ -33,4 +33,10 @@ public class BoletaController {
     public ResponseEntity<BoletaResponseDto> getById(@PathVariable Long id) {
         return ResponseEntity.ok(boletaService.getById(id));
     }
+
+    @GetMapping("/numero/{numeroBoleta}")
+    @Operation(summary = "Obtener boleta por numero de folio (ej. BOL-...)")
+    public ResponseEntity<BoletaResponseDto> getByNumeroBoleta(@PathVariable String numeroBoleta) {
+        return ResponseEntity.ok(boletaService.getByNumeroBoleta(numeroBoleta));
+    }
 }
