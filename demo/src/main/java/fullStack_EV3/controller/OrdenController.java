@@ -1,5 +1,6 @@
 package fullStack_EV3.controller;
 
+import fullStack_EV3.dto.ActualizarEstadoOrdenDto;
 import fullStack_EV3.dto.CrearOrdenRequestDto;
 import fullStack_EV3.dto.OrdenResponseDto;
 import fullStack_EV3.service.OrdenService;
@@ -33,11 +34,12 @@ public class OrdenController {
     }
 
     @GetMapping("/mis-ordenes")
-    @Operation(summary = "Listar ordenes del cliente autenticado (CLIENTE)")
+    @Operation(summary = "Listar ordenes exclusivas del cliente autenticado")
     public ResponseEntity<List<OrdenResponseDto>> getMisOrdenes(Authentication authentication) {
-        // TODO: [FULL STACK] Obtener el RUN del usuario autenticado para retornar exactamente sus ordenes
-        String email = authentication != null ? authentication.getName() : "";
-        return ResponseEntity.ok(ordenService.getAll());
+        if (authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(ordenService.getMisOrdenes(authentication.getName()));
     }
 
     @GetMapping("/usuario/{run}")
@@ -49,8 +51,16 @@ public class OrdenController {
     @PostMapping
     @Operation(summary = "Crear nueva orden de compra (CLIENTE o ADMIN)")
     public ResponseEntity<OrdenResponseDto> create(@Valid @RequestBody CrearOrdenRequestDto request,
-                                                  Authentication authentication) {
+                                                Authentication authentication) {
         String email = authentication != null ? authentication.getName() : null;
         return ResponseEntity.status(HttpStatus.CREATED).body(ordenService.create(request, email));
+    }
+
+    @PutMapping("/{id}/estado")
+    @Operation(summary = "Actualizar estado de una orden (Solo ADMIN)")
+    public ResponseEntity<OrdenResponseDto> actualizarEstado(
+            @PathVariable String id,
+            @Valid @RequestBody ActualizarEstadoOrdenDto dto) {
+        return ResponseEntity.ok(ordenService.actualizarEstado(id, dto.getNuevoEstado()));
     }
 }
