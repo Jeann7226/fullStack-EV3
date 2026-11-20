@@ -91,7 +91,7 @@ public class OrdenService {
                 .orElseGet(() -> estadoRepository.save(new Estado("PENDIENTE")));
 
         // Generación de identificador único de orden
-        String orderId = "ORD-" + System.currentTimeMillis() % 1000000;
+        String orderId = "ORD-" + System.currentTimeMillis();
 
         Orden orden = new Orden();
         orden.setIdOrden(orderId);

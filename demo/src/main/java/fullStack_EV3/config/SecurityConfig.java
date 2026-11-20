@@ -35,7 +35,7 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final CustomUserDetailsService userDetailsService;
 
-    @Value("${cors.origins:http://localhost:5173}")
+    @Value("${cors.origins:http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000}")
     private String corsOrigins;
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
@@ -67,12 +67,21 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        List<String> origins = Arrays.stream(corsOrigins.split(","))
+
+        List<String> patterns = Arrays.stream(corsOrigins.split(","))
                 .map(String::trim)
                 .toList();
-        configuration.setAllowedOrigins(origins);
+        configuration.setAllowedOriginPatterns(patterns.contains("*") ? List.of("*") : patterns);
+        if (!patterns.contains("*")) {
+            configuration.addAllowedOriginPattern("http://localhost:[*]");
+            configuration.addAllowedOriginPattern("http://127.0.0.1:[*]");
+            configuration.addAllowedOriginPattern("https://*.onrender.com");
+            configuration.addAllowedOriginPattern("https://*.vercel.app");
+            configuration.addAllowedOriginPattern("https://*.netlify.app");
+        }
+
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "X-Requested-With", "Origin"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "X-Requested-With", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"));
         configuration.setExposedHeaders(List.of("Authorization"));
         configuration.setAllowCredentials(true);
 
@@ -89,6 +98,9 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // Pre-flight requests OPTIONS
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                         // Rutas públicas
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/v1/ubicaciones/**").permitAll()
@@ -106,6 +118,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/productos/**", "/api/v1/categorias/**", "/api/v1/marcas/**").hasRole("ADMIN")
 
                         // Órdenes y Boletas
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/ordenes/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/v1/ordenes/**").hasAnyRole("CLIENTE", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/v1/ordenes/**").hasAnyRole("CLIENTE", "VENDEDOR", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/v1/boletas/**").hasAnyRole("VENDEDOR", "ADMIN")
