@@ -17,7 +17,7 @@ public class Imagen {
     @JsonIgnore
     private Producto producto;
 
-    @Column(name = "url_imagen", nullable = false)
+    @Column(name = "url_imagen", nullable = false, columnDefinition = "TEXT")
     private String urlImagen;
 
     @Column(name = "principal")
