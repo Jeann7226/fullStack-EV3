@@ -132,8 +132,12 @@ public class ProductoService {
     private void procesarImagenes(Producto producto, ProductoRequestDto dto) {
         List<Imagen> lista = new ArrayList<>();
 
-        if (dto.getImg() != null && !dto.getImg().isBlank()) {
-            lista.add(new Imagen(producto, dto.getImg(), true));
+        String primaryImg = (dto.getImg() != null && !dto.getImg().isBlank())
+                ? dto.getImg()
+                : dto.getUrlImagen();
+
+        if (primaryImg != null && !primaryImg.isBlank()) {
+            lista.add(new Imagen(producto, primaryImg, true));
         }
 
         if (dto.getImg2() != null && !dto.getImg2().isBlank()) {

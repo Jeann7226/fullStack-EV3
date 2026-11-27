@@ -194,7 +194,7 @@ public class DataInitializer implements CommandLineRunner {
                 "Polera albiceleste con el parche de campeon y tecnologia dry fit.", 15, 2, "XL",
                 "/assets/images/argentina/argentina1.jpg", "/assets/images/argentina/argentina2.jpg", selecciones);
 
-        crearProductoConDatos(puma, "Camiseta Colo-Colo Local 2026", 49990,
+        crearProductoConDatos(adidas, "Camiseta Colo-Colo Local 2026", 49990,
                 "Camiseta blanca tradicional con el king de fondo.", 10, 3, "L",
                 "/assets/images/zorras/zorra1.jpg", "/assets/images/zorras/zorra2.jpg", clubesChilenos);
     }

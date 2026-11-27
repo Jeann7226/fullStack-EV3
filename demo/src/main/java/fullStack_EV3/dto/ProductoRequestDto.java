@@ -33,9 +33,10 @@ public class ProductoRequestDto {
     private List<Long> categoriasIds = new ArrayList<>();
     private List<String> categoriasNombres = new ArrayList<>();
 
-    // Imagenes (soporta formato lista o atributos simples img/img2)
+    // Imagenes (soporta formato lista o atributos simples img/img2/urlImagen)
     private String img;
     private String img2;
+    private String urlImagen;
     private List<ImagenDto> imagenes = new ArrayList<>();
 
     public ProductoRequestDto() {
@@ -135,6 +136,14 @@ public class ProductoRequestDto {
 
     public void setImg2(String img2) {
         this.img2 = img2;
+    }
+
+    public String getUrlImagen() {
+        return urlImagen != null && !urlImagen.isBlank() ? urlImagen : img;
+    }
+
+    public void setUrlImagen(String urlImagen) {
+        this.urlImagen = urlImagen;
     }
 
     public List<ImagenDto> getImagenes() {
